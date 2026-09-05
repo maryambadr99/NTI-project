@@ -111,8 +111,5 @@ The project also includes a Flask backend that allows the Python functionality t
 
 This project was developed as part of the **National Telecommunication Institute (NTI) Python Training Program**.
 
-## Author
-
-**Maryam Waleed**
 
 
