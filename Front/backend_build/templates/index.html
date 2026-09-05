@@ -1,0 +1,598 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Nile Skies — مركز عمليات الطيران</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg: #0a0e1a; --bg-2: #0d1220; --panel: #121a2c; --panel-2: #182238;
+    --line: #24304a; --line-soft: #1a2438; --text: #edeff5; --text-dim: #8b96ac; --text-faint: #5c667c;
+    --amber: #f2a93b; --amber-dim: #a67a2e; --cyan: #4fd8c4;
+    --ok: #3ecf8e; --warn: #f2a93b; --bad: #f0546a; --info: #5b9df0;
+    --mono: 'JetBrains Mono', monospace; --sans: 'Cairo', sans-serif;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background: radial-gradient(1200px 600px at 15% -10%, rgba(79,216,196,0.06), transparent 60%),
+      radial-gradient(1000px 500px at 100% 0%, rgba(242,169,59,0.05), transparent 55%), var(--bg);
+    color:var(--text); font-family:var(--sans); min-height:100vh; line-height:1.5;
+  }
+  ::selection{background:var(--amber); color:#0a0e1a;}
+  a{color:inherit;} .mono{font-family:var(--mono);} button{font-family:var(--sans);}
+
+  .topbar{display:flex; align-items:center; justify-content:space-between; padding:18px 28px;
+    border-bottom:1px solid var(--line-soft); position:sticky; top:0; z-index:50;
+    background:rgba(10,14,26,0.88); backdrop-filter:blur(10px);}
+  .brand{display:flex; align-items:center; gap:12px;}
+  .brand-mark{width:34px; height:34px; border:1.5px solid var(--amber); border-radius:50%;
+    display:flex; align-items:center; justify-content:center; flex-shrink:0;}
+  .brand-mark svg{width:18px; height:18px;}
+  .brand-name{font-weight:800; font-size:1.05rem;}
+  .brand-name b{color:var(--amber); font-weight:900;}
+  .brand-sub{font-size:0.72rem; color:var(--text-faint); font-family:var(--mono); letter-spacing:0.5px;}
+  .topbar-right{display:flex; align-items:center; gap:18px;}
+  .clock{font-family:var(--mono); font-size:0.82rem; color:var(--cyan); display:flex; align-items:center; gap:8px;}
+  .clock .dot{width:6px; height:6px; border-radius:50%; background:var(--ok); box-shadow:0 0 8px var(--ok); animation:pulse 2s infinite;}
+  .live-dot{width:6px; height:6px; border-radius:50%; margin-inline-end:6px; display:inline-block;}
+  .live-dot.on{background:var(--ok); box-shadow:0 0 8px var(--ok);}
+  .live-dot.off{background:var(--bad);}
+  @keyframes pulse{0%,100%{opacity:1;}50%{opacity:0.35;}}
+  .admin-btn{background:none; border:1px solid var(--line); color:var(--text-dim); padding:7px 14px;
+    border-radius:20px; font-size:0.78rem; cursor:pointer;}
+  .admin-btn:hover{border-color:var(--amber); color:var(--amber);}
+  .admin-btn.on{border-color:var(--ok); color:var(--ok);}
+
+  .hero{padding:56px 28px 20px; max-width:1180px; margin:0 auto;}
+  .hero-top{display:flex; flex-wrap:wrap; gap:40px; align-items:flex-end; justify-content:space-between; margin-bottom:34px;}
+  .eyebrow{font-family:var(--mono); font-size:0.72rem; color:var(--cyan); letter-spacing:1px; margin-bottom:14px;}
+  h1.hero-title{font-size:clamp(2.1rem, 5vw, 3.4rem); font-weight:900; margin:0 0 12px; line-height:1.15; max-width:640px;}
+  h1.hero-title span{color:var(--amber);}
+  .hero-desc{color:var(--text-dim); max-width:480px; font-size:0.98rem;}
+  .hero-stats{display:flex; gap:28px; flex-wrap:wrap;}
+  .hstat{min-width:96px;}
+  .hstat .n{font-family:var(--mono); font-weight:700; font-size:1.7rem;}
+  .hstat .l{font-size:0.74rem; color:var(--text-faint); margin-top:2px;}
+
+  .board{background:linear-gradient(180deg, var(--panel), var(--bg-2)); border:1px solid var(--line);
+    border-radius:6px; overflow:hidden; box-shadow: 0 30px 60px -30px rgba(0,0,0,0.6);}
+  .board-head{display:grid; grid-template-columns: 60px 1fr 1fr 90px 90px 70px 70px; padding:10px 18px;
+    font-family:var(--mono); font-size:0.68rem; color:var(--text-faint); letter-spacing:0.6px; border-bottom:1px solid var(--line-soft);}
+  .board-row{display:grid; grid-template-columns: 60px 1fr 1fr 90px 90px 70px 70px; align-items:center;
+    padding:13px 18px; font-family:var(--mono); font-size:0.86rem; border-bottom:1px solid var(--line-soft);
+    opacity:0; transform:translateY(6px); animation: flapIn 0.5s ease forwards;}
+  .board-row:last-child{border-bottom:none;}
+  .board-row .route{font-family:var(--sans); font-weight:600; font-size:0.92rem;}
+  .board-row .route small{display:block; font-family:var(--mono); color:var(--text-faint); font-size:0.68rem; font-weight:400; margin-top:1px;}
+  .badge{display:inline-block; padding:3px 9px; border-radius:20px; font-size:0.66rem; font-family:var(--mono); letter-spacing:0.4px; border:1px solid transparent;}
+  .badge-active{color:var(--ok); background:rgba(62,207,142,0.1); border-color:rgba(62,207,142,0.3);}
+  .badge-maintenance{color:var(--warn); background:rgba(242,169,59,0.1); border-color:rgba(242,169,59,0.3);}
+  .badge-grounded{color:var(--bad); background:rgba(240,84,106,0.1); border-color:rgba(240,84,106,0.3);}
+  .badge-standby, .badge-available{color:var(--info); background:rgba(91,157,240,0.1); border-color:rgba(91,157,240,0.3);}
+  .badge-occupied{color:var(--bad); background:rgba(240,84,106,0.1); border-color:rgba(240,84,106,0.3);}
+  .badge-empty{color:var(--ok); background:rgba(62,207,142,0.1); border-color:rgba(62,207,142,0.3);}
+  .badge-onleave{color:var(--warn); background:rgba(242,169,59,0.1); border-color:rgba(242,169,59,0.3);}
+  @keyframes flapIn{ to{opacity:1; transform:translateY(0);} }
+
+  .tabs-wrap{position:sticky; top:73px; z-index:40; background:var(--bg); border-bottom:1px solid var(--line-soft);}
+  .tabs{max-width:1180px; margin:0 auto; display:flex; gap:4px; padding:0 28px; overflow-x:auto;}
+  .tab{background:none; border:none; color:var(--text-faint); cursor:pointer; padding:16px 6px; margin-left:26px;
+    font-size:0.92rem; font-weight:600; border-bottom:2px solid transparent; white-space:nowrap; transition:color 0.15s;}
+  .tab:hover{color:var(--text);}
+  .tab.active{color:var(--amber); border-bottom-color:var(--amber);}
+
+  main{max-width:1180px; margin:0 auto; padding:34px 28px 90px;}
+  .panel-section{display:none;} .panel-section.active{display:block;}
+  .section-head{display:flex; align-items:flex-end; justify-content:space-between; flex-wrap:wrap; gap:14px; margin-bottom:22px;}
+  .section-head h2{font-size:1.5rem; margin:0 0 4px;}
+  .section-head p{color:var(--text-dim); margin:0; font-size:0.88rem;}
+
+  .stat-row{display:grid; grid-template-columns:repeat(auto-fit, minmax(140px,1fr)); gap:1px; background:var(--line-soft);
+    border:1px solid var(--line-soft); border-radius:6px; overflow:hidden; margin-bottom:26px;}
+  .stat-card{background:var(--panel); padding:16px 18px;}
+  .stat-card .n{font-family:var(--mono); font-size:1.5rem; font-weight:700;}
+  .stat-card .l{color:var(--text-faint); font-size:0.74rem; margin-top:4px;}
+
+  .filter-row{display:flex; flex-wrap:wrap; gap:10px; margin-bottom:22px; align-items:center;}
+  .chip{padding:7px 14px; border-radius:20px; border:1px solid var(--line); background:var(--panel);
+    color:var(--text-dim); font-size:0.8rem; cursor:pointer; transition:all 0.15s;}
+  .chip:hover{border-color:var(--amber-dim);}
+  .chip.active{background:var(--amber); color:#0a0e1a; border-color:var(--amber); font-weight:700;}
+  input[type=text], input[type=password], select{background:var(--panel); border:1px solid var(--line); color:var(--text);
+    padding:9px 14px; border-radius:6px; font-size:0.86rem; font-family:var(--sans);}
+  input:focus, select:focus{outline:none; border-color:var(--cyan);}
+  input::placeholder{color:var(--text-faint);}
+  .search-box{flex:1; min-width:200px;}
+
+  .grid{display:grid; grid-template-columns:repeat(auto-fill, minmax(230px,1fr)); gap:12px;}
+  .card{background:var(--panel); border:1px solid var(--line-soft); border-radius:6px; padding:16px; transition:border-color 0.15s;}
+  .card:hover{border-color:var(--line);}
+  .card-top{display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:10px;}
+  .card-title{font-weight:700; font-size:0.96rem;}
+  .card-sub{font-family:var(--mono); font-size:0.72rem; color:var(--text-faint); margin-top:2px;}
+  .card-meta{display:flex; justify-content:space-between; font-size:0.78rem; color:var(--text-dim); margin-top:12px; border-top:1px solid var(--line-soft); padding-top:10px;}
+  .card-admin{margin-top:10px; display:flex; gap:6px;}
+  .card-admin select{flex:1; font-size:0.75rem; padding:6px 8px;}
+  .card-admin button{font-size:0.72rem; padding:6px 10px; border-radius:4px; border:1px solid var(--amber); background:none; color:var(--amber); cursor:pointer;}
+
+  .load-more{display:block; margin:26px auto 0; padding:11px 28px; background:none; border:1px solid var(--line);
+    color:var(--text-dim); border-radius:20px; cursor:pointer; font-size:0.85rem;}
+  .load-more:hover{border-color:var(--amber); color:var(--amber);}
+  .empty-note{color:var(--text-faint); text-align:center; padding:40px 0; font-size:0.9rem;}
+
+  .flight-search{background:var(--panel); border:1px solid var(--line-soft); border-radius:8px; padding:20px;
+    display:flex; gap:12px; flex-wrap:wrap; align-items:end; margin-bottom:26px;}
+  .field{display:flex; flex-direction:column; gap:6px;}
+  .field label{font-size:0.72rem; color:var(--text-faint); font-family:var(--mono);}
+  .btn{background:var(--amber); color:#0a0e1a; border:none; padding:10px 22px; border-radius:6px; font-weight:700; cursor:pointer; font-size:0.86rem;}
+  .btn:hover{background:#ffbb52;}
+  .btn:disabled{opacity:0.5; cursor:not-allowed;}
+  .btn-ghost{background:none; border:1px solid var(--line); color:var(--text-dim);}
+  .btn-ghost:hover{border-color:var(--text-dim); color:var(--text);}
+
+  .flight-card{background:var(--panel); border:1px solid var(--line-soft); border-radius:8px; padding:20px;
+    margin-bottom:12px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:16px;}
+  .flight-route{display:flex; align-items:center; gap:14px;}
+  .flight-route .city{font-weight:700; font-size:1.05rem;}
+  .flight-route .arrow{color:var(--amber); font-family:var(--mono);}
+  .flight-info{display:flex; gap:22px; flex-wrap:wrap; font-size:0.8rem; color:var(--text-dim);}
+  .flight-info b{color:var(--text); display:block; font-family:var(--mono); font-size:0.88rem;}
+  .flight-price{font-family:var(--mono); font-weight:700; color:var(--amber); font-size:1.15rem; white-space:nowrap;}
+
+  .hgrid{display:grid; grid-template-columns:repeat(auto-fill, minmax(150px,1fr)); gap:12px;}
+  .hbay{border:1px solid var(--line-soft); border-radius:8px; padding:16px; text-align:center;
+    background:linear-gradient(180deg, var(--panel), var(--bg-2)); position:relative; overflow:hidden;}
+  .hbay::before{content:''; position:absolute; top:0; right:0; left:0; height:3px;}
+  .hbay.occ::before{background:var(--bad);} .hbay.emp::before{background:var(--ok);}
+  .hbay .hid{font-family:var(--mono); font-weight:700; font-size:1.1rem; margin-bottom:6px;}
+  .hbay .haircraft{font-family:var(--mono); font-size:0.72rem; color:var(--text-faint); margin-bottom:10px;}
+  .hbay-admin{margin-top:8px;}
+  .hbay-admin button{font-size:0.68rem; padding:5px 8px; border-radius:4px; border:1px solid var(--line); background:none; color:var(--text-dim); cursor:pointer;}
+
+  table{width:100%; border-collapse:collapse; font-size:0.85rem;}
+  thead th{text-align:right; padding:10px 12px; color:var(--text-faint); font-family:var(--mono); font-size:0.68rem; font-weight:500; border-bottom:1px solid var(--line);}
+  tbody td{padding:12px; border-bottom:1px solid var(--line-soft);}
+  tbody tr:hover{background:var(--panel-2);}
+
+  .modal-bg{position:fixed; inset:0; background:rgba(5,8,15,0.75); backdrop-filter:blur(3px); display:none;
+    align-items:center; justify-content:center; z-index:100; padding:20px;}
+  .modal-bg.show{display:flex;}
+  .modal{background:var(--panel); border:1px solid var(--line); border-radius:10px; padding:28px; max-width:440px;
+    width:100%; max-height:85vh; overflow:auto; position:relative;}
+  .modal h3{margin-top:0;}
+  .modal .field{width:100%; margin-bottom:12px;}
+  .modal input{width:100%;}
+  .modal-error{color:var(--bad); font-size:0.8rem; margin-top:6px; min-height:1em;}
+  .confirm-slip{font-family:var(--mono); font-size:0.82rem; line-height:1.9; background:var(--bg-2);
+    border:1px dashed var(--line); border-radius:6px; padding:16px; white-space:pre-wrap;}
+  .close-x{position:absolute; left:20px; top:18px; background:none; border:none; color:var(--text-faint); font-size:1.3rem; cursor:pointer;}
+
+  footer{border-top:1px solid var(--line-soft); padding:26px 28px; text-align:center; color:var(--text-faint); font-size:0.78rem;}
+  .toast{position:fixed; bottom:24px; left:50%; transform:translateX(-50%); background:var(--panel); border:1px solid var(--line);
+    padding:12px 20px; border-radius:8px; font-size:0.85rem; z-index:200; display:none;}
+  .toast.err{border-color:var(--bad); color:var(--bad);}
+  .toast.ok{border-color:var(--ok); color:var(--ok);}
+
+  @media (max-width:640px){
+    .board-head, .board-row{grid-template-columns: 44px 1fr 70px 60px; }
+    .board-head span:nth-child(3), .board-head span:nth-child(5), .board-head span:nth-child(6),
+    .board-row span:nth-child(3), .board-row .dur, .board-row .gate{display:none;}
+  }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="brand">
+    <div class="brand-mark"><svg viewBox="0 0 24 24" fill="none"><path d="M2 16l7-2 3-7 2 .5-2 6.5 6-1.5.5 2-6 2-1 3-2-.5 1-3-7 2v-1z" fill="#f2a93b"/></svg></div>
+    <div><div class="brand-name">NILE <b>SKIES</b></div><div class="brand-sub">FLIGHT &amp; FLEET OPERATIONS</div></div>
+  </div>
+  <div class="topbar-right">
+    <div class="clock"><span class="live-dot" id="liveDot"></span><span id="clockTime">--:--:--</span></div>
+    <button class="admin-btn" id="adminBtn" onclick="openAdminLogin()">دخول الأدمن</button>
+  </div>
+</div>
+
+<div class="hero">
+  <div class="hero-top">
+    <div>
+      <div class="eyebrow">// مركز عمليات الطيران — متصل بالباك إند</div>
+      <h1 class="hero-title">تتبّع كل <span>رحلة</span>، كل <span>طائرة</span>، كل <span>حظيرة</span> — في مكان واحد.</h1>
+      <p class="hero-desc">لوحة تشغيل حية لأسطول نايل سكايز، متصلة فعليًا بسيرفر Flask بيقرا ويكتب في ملفات الـCSV.</p>
+    </div>
+    <div class="hero-stats">
+      <div class="hstat"><div class="n" id="statFleet">-</div><div class="l">طائرة بالأسطول</div></div>
+      <div class="hstat"><div class="n" id="statFlights">-</div><div class="l">رحلة مجدولة</div></div>
+      <div class="hstat"><div class="n" id="statHangars">-</div><div class="l">حظيرة صيانة</div></div>
+      <div class="hstat"><div class="n" id="statCrew">-</div><div class="l">فني نشط</div></div>
+    </div>
+  </div>
+
+  <div class="board">
+    <div class="board-head"><span>#</span><span>من</span><span>إلى</span><span>الإقلاع</span><span>الوصول</span><span>البوابة</span><span>السعر</span></div>
+    <div id="boardBody"><div class="empty-note">جاري تحميل بيانات الرحلات من السيرفر…</div></div>
+  </div>
+</div>
+
+<div class="tabs-wrap">
+  <div class="tabs">
+    <button class="tab active" data-tab="flights">الرحلات</button>
+    <button class="tab" data-tab="fleet">الأسطول</button>
+    <button class="tab" data-tab="hangars">الحظائر</button>
+    <button class="tab" data-tab="crew">الطاقم الفني</button>
+  </div>
+</div>
+
+<main>
+  <section class="panel-section active" id="tab-flights">
+    <div class="section-head"><div><h2>الرحلات المتاحة</h2><p>ابحث عن رحلتك حسب نقطة الانطلاق والوجهة — الحجز بيتسجل فعليًا في السيرفر</p></div></div>
+    <div class="flight-search">
+      <div class="field"><label>من</label><select id="fFrom"><option value="">أي مدينة</option></select></div>
+      <div class="field"><label>إلى</label><select id="fTo"><option value="">أي مدينة</option></select></div>
+      <button class="btn" onclick="renderFlights()">بحث</button>
+      <button class="btn btn-ghost" onclick="document.getElementById('fFrom').value='';document.getElementById('fTo').value='';renderFlights();">إعادة تعيين</button>
+    </div>
+    <div id="flightResults"><div class="empty-note">جاري التحميل…</div></div>
+  </section>
+
+  <section class="panel-section" id="tab-fleet">
+    <div class="section-head"><div><h2>الأسطول</h2><p>حالة جميع الطائرات المسجلة في النظام</p></div></div>
+    <div class="stat-row" id="fleetStats"></div>
+    <div class="filter-row">
+      <input type="text" class="search-box" id="fleetSearch" placeholder="ابحث بالاسم، الرقم التسلسلي أو الطراز…" oninput="fleetOffset=0;renderFleet();">
+      <div class="chip active" data-status="" onclick="setFleetFilter('')">الكل</div>
+      <div class="chip" data-status="Active" onclick="setFleetFilter('Active')">Active</div>
+      <div class="chip" data-status="Maintenance" onclick="setFleetFilter('Maintenance')">Maintenance</div>
+      <div class="chip" data-status="Standby" onclick="setFleetFilter('Standby')">Standby</div>
+      <div class="chip" data-status="Grounded" onclick="setFleetFilter('Grounded')">Grounded</div>
+    </div>
+    <div class="grid" id="fleetGrid"><div class="empty-note">جاري التحميل…</div></div>
+    <button class="load-more" id="fleetLoadMore" onclick="fleetOffset+=36;renderFleet(true);">تحميل المزيد</button>
+  </section>
+
+  <section class="panel-section" id="tab-hangars">
+    <div class="section-head"><div><h2>الحظائر</h2><p>حالة إشغال حظائر الصيانة</p></div></div>
+    <div class="stat-row" id="hangarStats"></div>
+    <div class="hgrid" id="hangarGrid"><div class="empty-note">جاري التحميل…</div></div>
+  </section>
+
+  <section class="panel-section" id="tab-crew">
+    <div class="section-head"><div><h2>الطاقم الفني</h2><p>فريق الهندسة والصيانة</p></div></div>
+    <div class="filter-row">
+      <input type="text" class="search-box" id="crewSearch" placeholder="ابحث بالاسم أو التخصص…" oninput="renderCrew();">
+      <div class="chip active" data-status="" onclick="setCrewFilter('')">الكل</div>
+      <div class="chip" data-status="Active" onclick="setCrewFilter('Active')">Active</div>
+      <div class="chip" data-status="On Leave" onclick="setCrewFilter('On Leave')">On Leave</div>
+    </div>
+    <div style="overflow-x:auto;">
+    <table>
+      <thead><tr><th>الاسم</th><th>الوظيفة</th><th>الطائرة</th><th>التخصص</th><th>التصريح</th><th>الحالة</th></tr></thead>
+      <tbody id="crewBody"><tr><td colspan="6" class="empty-note">جاري التحميل…</td></tr></tbody>
+    </table>
+    </div>
+  </section>
+</main>
+
+<div class="modal-bg" id="resModal"><div class="modal"><button class="close-x" onclick="closeModal('resModal')">×</button><div id="modalContent"></div></div></div>
+<div class="modal-bg" id="adminModal"><div class="modal"><button class="close-x" onclick="closeModal('adminModal')">×</button>
+  <h3>دخول الأدمن</h3>
+  <div class="field"><label>اسم المستخدم</label><input type="text" id="aUser"></div>
+  <div class="field"><label>كلمة المرور</label><input type="password" id="aPass"></div>
+  <div class="modal-error" id="adminErr"></div>
+  <button class="btn" style="width:100%;" onclick="doAdminLogin()">دخول</button>
+</div></div>
+<div class="toast" id="toast"></div>
+
+<footer>Nile Skies Ops · متصل بسيرفر Flask محلي — البيانات بتتحفظ فعليًا في ملفات الـCSV</footer>
+
+<script>
+const API = ""; // same-origin, Flask serves both frontend and API
+let AIRCRAFT = [], FLIGHTS = [], HANGARS = [], LABORS = [];
+let isAdmin = false, adminUser = "", adminPass = "";
+
+function toast(msg, kind){
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.className = 'toast show ' + (kind||'');
+  t.style.display = 'block';
+  clearTimeout(t._timer);
+  t._timer = setTimeout(()=>{ t.style.display = 'none'; }, 3500);
+}
+
+async function api(path, options){
+  const res = await fetch(API + path, Object.assign({headers:{'Content-Type':'application/json'}}, options||{}));
+  let data = null;
+  try{ data = await res.json(); }catch(e){}
+  if(!res.ok) throw new Error((data && data.error) || 'حصل خطأ في الاتصال بالسيرفر');
+  return data;
+}
+
+// ---------- clock ----------
+function tickClock(){ document.getElementById('clockTime').textContent = new Date().toLocaleTimeString('en-GB'); }
+tickClock(); setInterval(tickClock, 1000);
+
+// ---------- tabs ----------
+document.querySelectorAll('.tab').forEach(t=>{
+  t.addEventListener('click', ()=>{
+    document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));
+    document.querySelectorAll('.panel-section').forEach(x=>x.classList.remove('active'));
+    t.classList.add('active');
+    document.getElementById('tab-'+t.dataset.tab).classList.add('active');
+  });
+});
+
+function badgeClass(status){
+  const s = (status||'').toLowerCase().replace(' ','');
+  if(s==='active') return 'badge-active';
+  if(s==='maintenance') return 'badge-maintenance';
+  if(s==='grounded') return 'badge-grounded';
+  if(s==='standby') return 'badge-standby';
+  if(s==='available') return 'badge-available';
+  if(s==='occupied') return 'badge-occupied';
+  if(s==='empty') return 'badge-empty';
+  if(s==='onleave') return 'badge-onleave';
+  return 'badge-active';
+}
+
+// ---------- initial load from the real backend ----------
+async function loadAll(){
+  try{
+    const [a,f,h,l] = await Promise.all([
+      api('/api/aircraft'), api('/api/flights'), api('/api/hangars'), api('/api/labors')
+    ]);
+    AIRCRAFT=a; FLIGHTS=f; HANGARS=h; LABORS=l;
+    document.getElementById('liveDot').classList.add('on');
+    initUI();
+  }catch(e){
+    document.getElementById('liveDot').classList.add('off');
+    document.getElementById('boardBody').innerHTML = `<div class="empty-note">تعذر الاتصال بالسيرفر. تأكد إن app.py شغال (python app.py).</div>`;
+    document.getElementById('flightResults').innerHTML = document.getElementById('boardBody').innerHTML;
+    document.getElementById('fleetGrid').innerHTML = document.getElementById('boardBody').innerHTML;
+    document.getElementById('hangarGrid').innerHTML = document.getElementById('boardBody').innerHTML;
+  }
+}
+
+function initUI(){
+  document.getElementById('statFleet').textContent = AIRCRAFT.length;
+  document.getElementById('statFlights').textContent = FLIGHTS.length;
+  document.getElementById('statHangars').textContent = HANGARS.length;
+  document.getElementById('statCrew').textContent = LABORS.filter(l=>l.Status==='Active').length;
+
+  renderBoard();
+
+  const fromSet = [...new Set(FLIGHTS.map(f=>f.from))].sort();
+  const toSet = [...new Set(FLIGHTS.map(f=>f.to))].sort();
+  const fFrom = document.getElementById('fFrom'), fTo = document.getElementById('fTo');
+  fromSet.forEach(c=>fFrom.insertAdjacentHTML('beforeend', `<option value="${c}">${c}</option>`));
+  toSet.forEach(c=>fTo.insertAdjacentHTML('beforeend', `<option value="${c}">${c}</option>`));
+  renderFlights();
+  renderFleetStats(); renderFleet();
+  renderHangarStats(); renderHangars();
+  renderCrew();
+}
+
+function renderBoard(){
+  document.getElementById('boardBody').innerHTML = FLIGHTS.slice(0,8).map((f,i)=>`
+    <div class="board-row" style="animation-delay:${i*0.06}s">
+      <span class="mono">${f.flight_id}</span>
+      <span class="route">${f.from}<small>${f.date} · ${f.day}</small></span>
+      <span class="route">${f.to}<small>${f.duration}</small></span>
+      <span>${f.departure_time}</span><span>${f.arrival_time}</span>
+      <span class="gate">${f.gate}</span><span>${Number(f.price).toLocaleString()}</span>
+    </div>`).join('');
+}
+
+// ---------- flights ----------
+function renderFlights(){
+  const from = document.getElementById('fFrom').value, to = document.getElementById('fTo').value;
+  const results = FLIGHTS.filter(f => (!from || f.from===from) && (!to || f.to===to));
+  const wrap = document.getElementById('flightResults');
+  if(results.length===0){ wrap.innerHTML = '<div class="empty-note">لا توجد رحلات مطابقة لهذا البحث</div>'; return; }
+  wrap.innerHTML = results.map(f => `
+    <div class="flight-card">
+      <div class="flight-route"><span class="city">${f.from}</span><span class="arrow">✈ →</span><span class="city">${f.to}</span></div>
+      <div class="flight-info">
+        <div><b>${f.date}</b>${f.day}</div>
+        <div><b>${f.departure_time}</b>إقلاع</div>
+        <div><b>${f.arrival_time}</b>وصول</div>
+        <div><b>${f.duration}</b>المدة</div>
+        <div><b>بوابة ${f.gate} · صالة ${f.terminal}</b>البوابة</div>
+        <div><b>${f.available_seats}</b>مقعد متاح</div>
+      </div>
+      <div style="display:flex; align-items:center; gap:14px;">
+        <div class="flight-price">${Number(f.price).toLocaleString()} <span style="font-size:0.6em;color:var(--text-faint)">ج.م</span></div>
+        <button class="btn" ${Number(f.available_seats)<=0?'disabled':''} onclick="openReserve('${f.flight_id}')">${Number(f.available_seats)<=0?'مكتمل':'احجز'}</button>
+      </div>
+    </div>`).join('');
+}
+
+function openReserve(id){
+  const f = FLIGHTS.find(x=>x.flight_id===id);
+  document.getElementById('modalContent').innerHTML = `
+    <h3>حجز الرحلة #${f.flight_id}</h3>
+    <p style="color:var(--text-dim); font-size:0.85rem; margin-top:-8px;">${f.from} ← ${f.to} · ${f.date} · متاح ${f.available_seats} مقعد</p>
+    <div class="field"><label>الاسم الكامل</label><input type="text" id="rName" placeholder="اسمك"></div>
+    <div class="field"><label>رقم الهاتف</label><input type="text" id="rPhone" placeholder="01xxxxxxxxx"></div>
+    <div class="field"><label>البريد الإلكتروني</label><input type="text" id="rEmail" placeholder="name@email.com"></div>
+    <div class="field"><label>عدد المقاعد</label><input type="text" id="rSeats" value="1"></div>
+    <div class="modal-error" id="resErr"></div>
+    <button class="btn" style="width:100%; margin-top:6px;" onclick="confirmReserve('${f.flight_id}')">تأكيد الحجز</button>`;
+  document.getElementById('resModal').classList.add('show');
+}
+
+async function confirmReserve(id){
+  const name = document.getElementById('rName').value.trim();
+  const phone = document.getElementById('rPhone').value.trim();
+  const email = document.getElementById('rEmail').value.trim();
+  const seats = parseInt(document.getElementById('rSeats').value, 10);
+  try{
+    const result = await api('/api/reservations', {method:'POST', body: JSON.stringify({name, phone, email, flight_id:id, seats})});
+    const f = result.flight;
+    document.getElementById('modalContent').innerHTML = `
+      <h3>تم تأكيد الحجز ✓</h3>
+      <div class="confirm-slip">Dear ${result.name},
+
+Your reservation is confirmed!
+
+Reservation ID: ${result.reservation_id}
+Flight ID: ${f.flight_id}
+From: ${f.from}
+To: ${f.to}
+Date: ${f.date} (${f.day})
+Departure: ${f.departure_time}
+Arrival: ${f.arrival_time}
+Gate: ${f.gate}
+Terminal: ${f.terminal}
+Seats reserved: ${result.seats}
+Price per seat: ${f.price}
+
+Thank you for booking with us!</div>
+      <button class="btn btn-ghost" style="width:100%; margin-top:14px;" onclick="closeModal('resModal')">إغلاق</button>`;
+    // refresh flights from server so seat counts everywhere reflect the write we just made
+    FLIGHTS = await api('/api/flights');
+    renderBoard(); renderFlights();
+  }catch(e){
+    document.getElementById('resErr').textContent = e.message;
+  }
+}
+
+function closeModal(id){ document.getElementById(id).classList.remove('show'); }
+document.querySelectorAll('.modal-bg').forEach(m=>{
+  m.addEventListener('click', e=>{ if(e.target===m) closeModal(m.id); });
+});
+
+// ---------- admin ----------
+function openAdminLogin(){
+  if(isAdmin){ isAdmin=false; adminUser=""; adminPass="";
+    document.getElementById('adminBtn').textContent = 'دخول الأدمن';
+    document.getElementById('adminBtn').classList.remove('on');
+    renderFleet(); renderHangars();
+    toast('تم الخروج من وضع الأدمن');
+    return;
+  }
+  document.getElementById('aUser').value=''; document.getElementById('aPass').value='';
+  document.getElementById('adminErr').textContent='';
+  document.getElementById('adminModal').classList.add('show');
+}
+async function doAdminLogin(){
+  const u = document.getElementById('aUser').value.trim();
+  const p = document.getElementById('aPass').value.trim();
+  try{
+    await api('/api/admin/login', {method:'POST', body: JSON.stringify({username:u, password:p})});
+    isAdmin=true; adminUser=u; adminPass=p;
+    document.getElementById('adminBtn').textContent = 'أدمن: ' + u;
+    document.getElementById('adminBtn').classList.add('on');
+    closeModal('adminModal');
+    toast('تم الدخول كأدمن — تقدر دلوقتي تعدّل حالة الطائرات والحظائر', 'ok');
+    renderFleet(); renderHangars();
+  }catch(e){
+    document.getElementById('adminErr').textContent = e.message;
+  }
+}
+async function adminSetAircraftStatus(serial, status){
+  try{
+    await api('/api/aircraft/' + encodeURIComponent(serial), {method:'PATCH',
+      body: JSON.stringify({status, admin_username:adminUser, admin_password:adminPass})});
+    AIRCRAFT = await api('/api/aircraft');
+    renderFleetStats(); renderFleet(); toast('تم تحديث حالة الطائرة', 'ok');
+  }catch(e){ toast(e.message, 'err'); }
+}
+async function adminSetHangarStatus(hangerId, status){
+  try{
+    await api('/api/hangars/' + encodeURIComponent(hangerId), {method:'PATCH',
+      body: JSON.stringify({status, admin_username:adminUser, admin_password:adminPass})});
+    HANGARS = await api('/api/hangars');
+    renderHangarStats(); renderHangars(); toast('تم تحديث حالة الحظيرة', 'ok');
+  }catch(e){ toast(e.message, 'err'); }
+}
+
+// ---------- fleet ----------
+let fleetOffset = 0, fleetFilter = '';
+function setFleetFilter(status){
+  fleetFilter = status; fleetOffset = 0;
+  document.querySelectorAll('#tab-fleet .chip').forEach(c=>c.classList.toggle('active', c.dataset.status===status));
+  renderFleet();
+}
+function renderFleetStats(){
+  const counts = {};
+  AIRCRAFT.forEach(a=>{ counts[a.status] = (counts[a.status]||0)+1; });
+  const order = ['Active','Maintenance','Standby','Grounded','Available'];
+  document.getElementById('fleetStats').innerHTML = order.filter(s=>counts[s]).map(s=>`
+    <div class="stat-card"><div class="n">${counts[s]}</div><div class="l">${s}</div></div>`).join('')
+    + `<div class="stat-card"><div class="n">${AIRCRAFT.length}</div><div class="l">الإجمالي</div></div>`;
+}
+function renderFleet(){
+  const q = document.getElementById('fleetSearch').value.trim().toLowerCase();
+  const filtered = AIRCRAFT.filter(a=>{
+    const matchQ = !q || a.name.toLowerCase().includes(q) || a.serial_number.toLowerCase().includes(q) || a.model.toLowerCase().includes(q);
+    const matchS = !fleetFilter || a.status===fleetFilter;
+    return matchQ && matchS;
+  });
+  const slice = filtered.slice(0, fleetOffset+36);
+  const grid = document.getElementById('fleetGrid');
+  if(filtered.length===0){ grid.innerHTML = '<div class="empty-note">لا توجد طائرات مطابقة</div>'; }
+  else{
+    grid.innerHTML = slice.map(a=>`
+      <div class="card">
+        <div class="card-top">
+          <div><div class="card-title">${a.name}</div><div class="card-sub">${a.serial_number}</div></div>
+          <span class="badge ${badgeClass(a.status)}">${a.status}</span>
+        </div>
+        <div class="card-meta"><span>${a.model}</span><span>${a.capacity} مقعد</span></div>
+        ${isAdmin ? `<div class="card-admin">
+          <select id="sel-${a.serial_number}">
+            ${['Active','Maintenance','Standby','Grounded','Available'].map(s=>`<option ${s===a.status?'selected':''}>${s}</option>`).join('')}
+          </select>
+          <button onclick="adminSetAircraftStatus('${a.serial_number}', document.getElementById('sel-${a.serial_number}').value)">حفظ</button>
+        </div>` : ''}
+      </div>`).join('');
+  }
+  document.getElementById('fleetLoadMore').style.display = (slice.length < filtered.length) ? 'block' : 'none';
+}
+
+// ---------- hangars ----------
+function renderHangarStats(){
+  const occ = HANGARS.filter(h=>h.Status==='Occupied').length;
+  const emp = HANGARS.filter(h=>h.Status==='Empty').length;
+  document.getElementById('hangarStats').innerHTML = `
+    <div class="stat-card"><div class="n">${HANGARS.length}</div><div class="l">إجمالي الحظائر</div></div>
+    <div class="stat-card"><div class="n" style="color:var(--bad)">${occ}</div><div class="l">مشغولة</div></div>
+    <div class="stat-card"><div class="n" style="color:var(--ok)">${emp}</div><div class="l">فارغة</div></div>`;
+}
+function renderHangars(){
+  document.getElementById('hangarGrid').innerHTML = HANGARS.map(h=>`
+    <div class="hbay ${h.Status==='Occupied'?'occ':'emp'}">
+      <div class="hid">${h.Hanger}</div>
+      <div class="haircraft">${h.Aircraft}</div>
+      <span class="badge ${badgeClass(h.Status)}">${h.Status}</span>
+      ${isAdmin ? `<div class="hbay-admin"><button onclick="adminSetHangarStatus('${h.Hanger}', '${h.Status==='Occupied'?'Empty':'Occupied'}')">تبديل الحالة</button></div>` : ''}
+    </div>`).join('');
+}
+
+// ---------- crew ----------
+let crewFilter = '';
+function setCrewFilter(status){
+  crewFilter = status;
+  document.querySelectorAll('#tab-crew .chip').forEach(c=>c.classList.toggle('active', c.dataset.status===status));
+  renderCrew();
+}
+function renderCrew(){
+  const q = document.getElementById('crewSearch').value.trim().toLowerCase();
+  const filtered = LABORS.filter(l=>{
+    const matchQ = !q || l.Name.toLowerCase().includes(q) || l.Specialization.toLowerCase().includes(q) || l.Position.toLowerCase().includes(q);
+    const matchS = !crewFilter || l.Status===crewFilter;
+    return matchQ && matchS;
+  });
+  document.getElementById('crewBody').innerHTML = filtered.map(l=>`
+    <tr><td>${l.Name}</td><td>${l.Position}</td><td class="mono">${l.Aircraft_ID}</td><td>${l.Specialization}</td>
+      <td><span class="badge badge-standby">${l.Clearance}</span></td><td><span class="badge ${badgeClass(l.Status)}">${l.Status}</span></td></tr>
+  `).join('') || '<tr><td colspan="6" class="empty-note">لا يوجد فنيون مطابقون</td></tr>';
+}
+
+loadAll();
+</script>
+</body>
+</html>

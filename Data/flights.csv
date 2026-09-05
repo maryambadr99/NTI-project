@@ -1,0 +1,21 @@
+flight_id,from,to,date,day,departure_time,arrival_time,duration,gate,terminal,available_seats,price
+1,Cairo,Dubai,2026-09-10,Thursday,08:00 AM,12:00 PM,4 hours,A12,2,42,5000
+2,Dubai,Cairo,2026-09-10,Thursday,03:00 PM,05:00 PM,2 hours,B05,1,38,5000
+3,Cairo,London,2026-09-11,Friday,06:00 PM,11:00 PM,5 hours,C10,3,60,9000
+4,Alexandria,Riyadh,2026-09-11,Friday,09:00 AM,01:30 PM,4.5 hours,A03,1,28,5500
+5,Cairo,Paris,2026-09-12,Saturday,07:30 AM,12:00 PM,4.5 hours,B12,2,50,8500
+6,Paris,Cairo,2026-09-12,Saturday,02:00 PM,07:00 PM,5 hours,C07,3,42,8500
+7,Cairo,Istanbul,2026-09-13,Sunday,10:30 AM,02:30 PM,4 hours,B05,1,32,6500
+8,Cairo,Doha,2026-09-13,Sunday,11:00 AM,02:30 PM,3.5 hours,A08,2,35,4800
+9,Cairo,New York,2026-09-14,Monday,09:00 PM,04:00 AM,11 hours,C15,3,55,12000
+10,Cairo,Barcelona,2026-09-14,Monday,01:00 PM,05:00 PM,4 hours,A10,2,38,8000
+11,Cairo,Riyadh,2026-09-15,Tuesday,08:30 AM,12:30 PM,4 hours,B08,1,47,5500
+12,Riyadh,Cairo,2026-09-15,Tuesday,04:00 PM,06:00 PM,2 hours,C03,3,41,5500
+13,Cairo,Amman,2026-09-16,Wednesday,07:00 AM,09:00 AM,2 hours,A02,2,25,3500
+14,Cairo,Muscat,2026-09-16,Wednesday,05:30 PM,09:00 PM,3.5 hours,B14,1,30,5000
+15,Cairo,Frankfurt,2026-09-17,Thursday,10:00 AM,02:30 PM,4.5 hours,C06,3,52,8700
+16,Frankfurt,Cairo,2026-09-17,Thursday,05:00 PM,10:00 PM,5 hours,A11,2,44,8700
+17,Cairo,Tokyo,2026-09-18,Friday,11:00 PM,04:00 PM,12 hours,B20,1,59,15000
+18,Cairo,New York,2026-09-19,Saturday,08:00 PM,03:00 AM,11 hours,C12,3,58,12500
+19,Cairo,Athens,2026-09-20,Sunday,09:30 AM,12:00 PM,2.5 hours,A07,2,33,6000
+20,Alexandria,Doha,2026-09-20,Sunday,02:00 PM,05:30 PM,3.5 hours,B09,1,25,4900

@@ -1,0 +1,31 @@
+Labor_ID,Name,Position,Aircraft_ID,Clearance,Status,Specialization
+L001,Ahmed Hassan,Aircraft Engineer,A001,TOP_SECRET,Active,Avionics
+L002,Sara Adel,Aircraft Mechanic,A002,SECRET,Active,Engine Maintenance
+L003,Omar Khaled,Avionics Engineer,A003,TOP_SECRET,Active,Avionics
+L004,Mariam Hassan,Maintenance Engineer,A004,CONFIDENTIAL,Active,Structural Maintenance
+L005,Youssef Adel,Aircraft Technician,A005,SECRET,On Leave,Engine Maintenance
+L006,Nour Khaled,Electrical Engineer,A006,TOP_SECRET,Active,Electrical Systems
+L007,Karim Samir,Avionics Technician,A007,CONFIDENTIAL,Active,Radar Systems
+L008,Salma Nabil,Maintenance Technician,A008,SECRET,Active,Hydraulics
+L009,Yassin Khaled,Aircraft Engineer,A009,TOP_SECRET,Active,Flight Systems
+L010,Farida Samir,Aircraft Technician,A010,CONFIDENTIAL,On Leave,Engine Maintenance
+L011,Mostafa Adel,Avionics Engineer,A011,TOP_SECRET,Active,Navigation Systems
+L012,Jana Hassan,Aircraft Mechanic,A012,SECRET,Active,Engine Maintenance
+L013,Mohamed Adel,Maintenance Technician,A013,CONFIDENTIAL,Active,Hydraulics
+L014,Yara Khaled,Electrical Engineer,A014,SECRET,Active,Electrical Systems
+L015,Farida Nabil,Aircraft Engineer,A015,TOP_SECRET,Active,Avionics
+L016,Ali Hassan,Aircraft Technician,A016,CONFIDENTIAL,On Leave,Structural Maintenance
+L017,Malak Adel,Avionics Technician,A017,SECRET,Active,Communication Systems
+L018,Ahmed Khaled,Maintenance Engineer,A018,TOP_SECRET,Active,Flight Systems
+L019,Lina Hassan,Aircraft Mechanic,A019,SECRET,Active,Engine Maintenance
+L020,Omar Adel,Avionics Engineer,A020,TOP_SECRET,Active,Radar Systems
+L021,Jana Nabil,Aircraft Technician,A021,CONFIDENTIAL,Active,Hydraulics
+L022,Mohamed Hassan,Aircraft Engineer,A022,TOP_SECRET,Active,Avionics
+L023,Hana Samir,Maintenance Technician,A023,SECRET,On Leave,Electrical Systems
+L024,Amr Khaled,Electrical Engineer,A024,CONFIDENTIAL,Active,Electrical Systems
+L025,Sara Hassan,Aircraft Mechanic,A025,SECRET,Active,Engine Maintenance
+L026,Omar Nabil,Avionics Technician,A026,TOP_SECRET,Active,Navigation Systems
+L027,Lina Adel,Maintenance Engineer,A027,CONFIDENTIAL,Active,Structural Maintenance
+L028,Ali Khaled,Aircraft Engineer,A028,TOP_SECRET,Active,Flight Systems
+L029,Mariam Samir,Aircraft Technician,A029,SECRET,On Leave,Avionics
+L030,Yassin Adel,Avionics Engineer,A030,TOP_SECRET,Active,Radar Systems

@@ -1,0 +1,16 @@
+Dear CUSTOMER_NAME,
+
+Your reservation is confirmed!
+
+Flight ID: FLIGHT_ID
+From: FROM
+To: TO
+Date: DATE (DAY)
+Departure: DEPARTURE_TIME
+Arrival: ARRIVAL_TIME
+Gate: GATE
+Terminal: TERMINAL
+Seats reserved: SEATS
+Price per seat: PRICE
+
+Thank you for booking with us!
